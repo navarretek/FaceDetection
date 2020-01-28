@@ -21,7 +21,7 @@ namespace FaceDetection
     public partial class Form1 : Form
     {
         static readonly CascadeClassifier cascadeClassifier = new CascadeClassifier("haarcascade_frontalface_alt_tree.xml");
-        FilterInfoCollection filter;
+        FilterInfoCollection videoDevices;
         VideoCaptureDevice device;
         ScreenCaptureStream stream;
         FileVideoSource videoSource;
@@ -46,16 +46,17 @@ namespace FaceDetection
         private void Form1_Load(object sender, EventArgs e)
         {
             secondInFramesDefault = 150;
-            DeviceDropBox.Items.Add("Video File");
-            DeviceDropBox.SelectedIndex = 0;
             
-            filter = new FilterInfoCollection(FilterCategory.VideoInputDevice);
             
-            foreach (FilterInfo device in filter)
+            videoDevices = new FilterInfoCollection(FilterCategory.VideoInputDevice);
+            
+            //fill dropbox
+            foreach (FilterInfo device in videoDevices)
             {
                 DeviceDropBox.Items.Add(device.Name);
             }
-
+            DeviceDropBox.Items.Add("Video File");
+            DeviceDropBox.SelectedIndex = 2;
             device = new VideoCaptureDevice();
             videoSource = new FileVideoSource();
             writer = new AVIWriter();
@@ -87,8 +88,9 @@ namespace FaceDetection
             
             else 
             {
-                VideoCaptureDevice vcd = new VideoCaptureDevice(stream.Source);
-                device = new VideoCaptureDevice(filter[DeviceDropBox.SelectedIndex].MonikerString);
+                //VideoCaptureDevice vcd = new VideoCaptureDevice(stream.Source);
+                var selected = DeviceDropBox.SelectedIndex;
+                device = new VideoCaptureDevice(videoDevices[selected].MonikerString);
                 device.NewFrame += Device_NewFrameAsync;
 
                 device.Start();
@@ -273,7 +275,16 @@ namespace FaceDetection
             }
             if (asyncVS is null || asyncVS.IsRunning)
             {
-                asyncVS.Stop();
+                try
+                {
+                    asyncVS.Stop();
+                }
+                catch (Exception)
+                {
+
+                    
+                }
+                
             }
             picBox.Image = null;
         }
