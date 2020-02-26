@@ -141,12 +141,7 @@ namespace FaceDetection
             }
 
 
-            /*else if (recording && !FaceDetected() && secondInFrames == 0)
-            {
-                StopRecord();
-                numOfImg++;
-            }
-           */
+         
             picBox.Image = newImage;
         }
         public Bitmap ResizeBitmap(Bitmap bmp, int width, int height)
